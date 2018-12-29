@@ -1,7 +1,19 @@
 extern crate cgmath;
 extern crate glutin;
+extern crate gl;
 
-mod mesh;
+use glutin::GlContext;
+
+use std::sync::Arc;
+
+#[macro_use]
+pub mod gl_error;
+
+pub mod game;
+pub mod mesh;
+pub mod vertex_buffer;
+pub mod actor;
+pub mod test_actor;
 
 fn main() {
     println!("Starting Rustcraft...");
@@ -19,6 +31,10 @@ fn main() {
         gl_window.make_current().expect("Failed to make GL context current!");
     }
 
+    gl::load_with(|s| gl_window.get_proc_address(s) as *const _);
+
+    let game = Arc::new(game::Game::new());
+
     let mut run = true;
 
     while run {
@@ -30,8 +46,12 @@ fn main() {
                 } => {
                     run = false;
                 }
-                _ => {}
+                _ => {
+                    game.render();
+                }
             }
         });
+
+        gl_window.swap_buffers().unwrap();
     }
 }
