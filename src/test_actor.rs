@@ -1,9 +1,8 @@
-use cgmath::{Vector2, Vector3};
+use cgmath::Vector3;
 use cgmath::Matrix4;
 use cgmath::Point3;
 
 use crate::actor::Actor;
-use crate::mesh::Mesh;
 use crate::vertex_buffer::VertexBuffer;
 use crate::shader::Shader;
 use crate::texture::Texture;
