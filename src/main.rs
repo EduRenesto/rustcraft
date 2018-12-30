@@ -1,6 +1,7 @@
 extern crate cgmath;
 extern crate glutin;
 extern crate gl;
+extern crate stb_image;
 
 use glutin::GlContext;
 
@@ -13,8 +14,14 @@ pub mod game;
 pub mod mesh;
 pub mod vertex_buffer;
 pub mod shader;
+pub mod texture;
 pub mod actor;
 pub mod test_actor;
+pub mod block;
+pub mod chunk;
+
+#[macro_use]
+pub mod block_manager;
 
 fn main() {
     println!("Starting Rustcraft...");
@@ -35,6 +42,11 @@ fn main() {
     gl::load_with(|s| gl_window.get_proc_address(s) as *const _);
 
     let game = Arc::new(game::Game::new());
+
+    unsafe {
+        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
+        gl::Viewport(0, 0, 1280, 720);
+    }
 
     let mut run = true;
 

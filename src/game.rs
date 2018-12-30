@@ -1,22 +1,31 @@
 use std::boxed::Box;
 
+use crate::block_manager::BlockManager;
+use crate::block::Block;
 use crate::actor::Actor;
 use crate::test_actor::TestActor;
 
+type IVec2 = cgmath::Vector2<u32>;
+
 pub struct Game {
-    actors: Vec<Box<dyn Actor>>
+    actors: Vec<Box<dyn Actor>>,
+
 }
 
 impl Game {
     pub fn new() -> Game {
+        let mut manager = BlockManager::new();
+
+        manager.add_block(0, Block::new("Air", false, vec![]));
+        manager.add_block(1, Block::new("Stone", false, vec![IVec2::new(1, 0)]));
+
         let a = TestActor::new();
         Game { actors: vec![Box::new(a)] }
     }
 
     pub fn render(&self) {
         unsafe {
-            gl::ClearColor(1.0, 0.0, 1.0, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
         for actor in self.actors.iter() {
             actor.render();

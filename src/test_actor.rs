@@ -5,13 +5,15 @@ use crate::actor::Actor;
 use crate::mesh::Mesh;
 use crate::vertex_buffer::VertexBuffer;
 use crate::shader::Shader;
+use crate::texture::Texture;
 
 use gl::{FRAGMENT_SHADER, VERTEX_SHADER};
 
 pub struct TestActor {
     vbo: VertexBuffer,
     shader: Shader,
-    proj_matrix: Matrix4<f32>
+    proj_matrix: Matrix4<f32>,
+    text: Texture
 }
 
 impl TestActor {
@@ -32,10 +34,16 @@ impl TestActor {
                                     Box::new((FRAGMENT_SHADER, "res/shaders/simple.fs.glsl".to_string()))])
             .unwrap();
 
+        let text = Texture::from_file("res/textures/test.png".to_string(),
+                                               gl::NEAREST as i32,
+                                               gl::NEAREST as i32)
+            .unwrap();
+
         TestActor { 
             vbo: VertexBuffer::from_mesh(m), 
             shader: shader,
-            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.00001, 100000.0)
+            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.00001, 100000.0),
+            text: text
         }
     }
 }
@@ -43,6 +51,7 @@ impl TestActor {
 impl Actor for TestActor {
     fn render(&self) {
         self.shader.bind();
+        self.text.bind();
         self.shader.uniform_mat4x4("_Projection".to_string(), self.proj_matrix);
         self.vbo.render();
     }

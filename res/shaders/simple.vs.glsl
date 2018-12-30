@@ -15,5 +15,5 @@ void main() {
     out_Norm = in_Norm;
     out_Uv = in_Uv;
 
-    gl_Position = _Projection * out_Pos;
+    gl_Position = out_Pos;
 }
