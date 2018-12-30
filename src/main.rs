@@ -12,6 +12,7 @@ pub mod gl_error;
 pub mod game;
 pub mod mesh;
 pub mod vertex_buffer;
+pub mod shader;
 pub mod actor;
 pub mod test_actor;
 
@@ -47,10 +48,11 @@ fn main() {
                     run = false;
                 }
                 _ => {
-                    game.render();
                 }
             }
         });
+
+        game.render();
 
         gl_window.swap_buffers().unwrap();
     }

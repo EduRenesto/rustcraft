@@ -1,11 +1,17 @@
 use cgmath::{Vector2, Vector3};
+use cgmath::Matrix4;
 
 use crate::actor::Actor;
 use crate::mesh::Mesh;
 use crate::vertex_buffer::VertexBuffer;
+use crate::shader::Shader;
+
+use gl::{FRAGMENT_SHADER, VERTEX_SHADER};
 
 pub struct TestActor {
-    vbo: VertexBuffer
+    vbo: VertexBuffer,
+    shader: Shader,
+    proj_matrix: Matrix4<f32>
 }
 
 impl TestActor {
@@ -22,12 +28,22 @@ impl TestActor {
                                 Vector2::<f32>::new(1.0, 0.0)])
         };
 
-        TestActor { vbo: VertexBuffer::from_mesh(m) }
+        let shader = Shader::new(vec![Box::new((VERTEX_SHADER, "res/shaders/simple.vs.glsl".to_string())),
+                                    Box::new((FRAGMENT_SHADER, "res/shaders/simple.fs.glsl".to_string()))])
+            .unwrap();
+
+        TestActor { 
+            vbo: VertexBuffer::from_mesh(m), 
+            shader: shader,
+            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.00001, 100000.0)
+        }
     }
 }
 
 impl Actor for TestActor {
     fn render(&self) {
+        self.shader.bind();
+        self.shader.uniform_mat4x4("_Projection".to_string(), self.proj_matrix);
         self.vbo.render();
     }
 
