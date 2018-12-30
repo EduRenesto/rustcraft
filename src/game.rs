@@ -9,7 +9,6 @@ type IVec2 = cgmath::Vector2<u32>;
 
 pub struct Game {
     actors: Vec<Box<dyn Actor>>,
-
 }
 
 impl Game {
@@ -17,9 +16,20 @@ impl Game {
         let mut manager = BlockManager::new();
 
         manager.add_block(0, Block::new("Air", false, vec![]));
-        manager.add_block(1, Block::new("Stone", false, vec![IVec2::new(1, 0)]));
+        manager.add_block(1, Block::new("Stone", false, vec![IVec2::new(1, 0),
+                                                            IVec2::new(1, 0),
+                                                            IVec2::new(1, 0),
+                                                            IVec2::new(1, 0),
+                                                            IVec2::new(1, 0),
+                                                            IVec2::new(1, 0)]));
+        manager.add_block(2, Block::new("Dirt", false, vec![IVec2::new(2, 0),
+                                                           IVec2::new(2, 0),
+                                                           IVec2::new(2, 0),
+                                                           IVec2::new(2, 0),
+                                                           IVec2::new(2, 0),
+                                                           IVec2::new(2, 0)]));
 
-        let a = TestActor::new();
+        let a = TestActor::new(&manager);
         Game { actors: vec![Box::new(a)] }
     }
 

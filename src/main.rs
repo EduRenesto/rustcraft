@@ -46,6 +46,7 @@ fn main() {
     unsafe {
         gl::ClearColor(0.0, 0.0, 0.0, 1.0);
         gl::Viewport(0, 0, 1280, 720);
+        gl::Enable(gl::DEPTH_TEST);
     }
 
     let mut run = true;

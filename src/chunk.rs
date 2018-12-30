@@ -13,10 +13,10 @@ type IVec3 = cgmath::Vector3<i32>;
 // we add 2 to each dimension because of the edges
 pub struct Chunk {
     // the blocks
-    blocks: [[[u32; 18]; 66]; 18], 
+    pub blocks: [[[u32; 18]; 66]; 18], 
 
     // the position (in "chunk space")
-    position: IVec3
+    pub position: IVec3
 }
 
 impl Chunk {
@@ -78,9 +78,9 @@ impl Chunk {
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[0] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                     if neg_x == 0 {
@@ -88,7 +88,7 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 - 1 + (x as i32 - 1)) as f32,
+                            (self.position.x * 16 + (x as i32 - 1)) as f32,
                             (self.position.y * 64 + (y as i32 - 1)) as f32,
                             (self.position.z * 16 + (z as i32 - 1)) as f32
                         );
@@ -102,9 +102,9 @@ impl Chunk {
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         // End first triangle
                         
                         // Begin second triangle
@@ -116,9 +116,9 @@ impl Chunk {
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[1] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                     if pos_y == 0 { 
@@ -140,9 +140,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         // End first triangle
                         
                         // Begin second triangle
@@ -154,9 +154,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[2] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                     if neg_y == 0 {
@@ -165,7 +165,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 - 1 + (y as i32 - 1)) as f32,
+                            (self.position.y * 64 + (y as i32 - 1)) as f32,
                             (self.position.z * 16 + (z as i32 - 1)) as f32
                         );
 
@@ -178,9 +178,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         // End first triangle
                         
                         // Begin second triangle
@@ -192,9 +192,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[3] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                     if pos_z == 0 {
@@ -216,9 +216,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         // End first triangle
                         
                         // Begin second triangle
@@ -230,9 +230,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[4] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                     if neg_z == 0 {
@@ -242,7 +242,7 @@ impl Chunk {
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32 - 1)) as f32,
                             (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 - 1 + (z as i32 - 1)) as f32
+                            (self.position.z * 16 + (z as i32 - 1)) as f32
                         );
 
                         // Begin first triangle
@@ -254,9 +254,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
 
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[5] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[5] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[5] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         // End first triangle
                         
                         // Begin second triangle
@@ -268,9 +268,9 @@ impl Chunk {
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
 
-                        uvs.push(Vec2::new(0.0, 1.0));
-                        uvs.push(Vec2::new(1.0, 1.0));
-                        uvs.push(Vec2::new(1.0, 0.0));
+                        uvs.push(uv_offset[5] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[5] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[5] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
                         // End second triangle
                     }
                 }

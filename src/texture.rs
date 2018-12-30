@@ -14,8 +14,6 @@ impl Texture {
         match data {
             image::LoadResult::Error(err) => return Err(err),
             image::LoadResult::ImageU8(img) => {
-                println!("u8");
-
                 let tex = Texture::new();
                 tex.bind();
 
@@ -47,8 +45,6 @@ impl Texture {
                 return Ok(tex);
             },
             image::LoadResult::ImageF32(img) => {
-                println!("f32");
-
                 let tex = Texture::new();
                 tex.bind();
 

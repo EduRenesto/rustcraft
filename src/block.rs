@@ -35,7 +35,7 @@ impl Block {
             let u = (1.0 / TERRAIN_WIDTH as f32) * (tex.x as f32);
             let v = 1.0 - ((1.0 / TERRAIN_HEIGHT as f32) * (tex.y as f32 + 1.0));
 
-            uvs.push(Vec2::new(u ,v));
+            uvs.push(Vec2::new(u, v));
         }
 
         uvs

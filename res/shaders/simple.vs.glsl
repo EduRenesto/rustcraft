@@ -9,11 +9,14 @@ out vec3 out_Norm;
 out vec2 out_Uv;
 
 uniform mat4 _Projection;
+uniform mat4 _View;
 
 void main() {
+    mat4 mvp = _Projection * _View;
+
     out_Pos = vec4(in_Pos, 1.0);
     out_Norm = in_Norm;
     out_Uv = in_Uv;
 
-    gl_Position = out_Pos;
+    gl_Position = mvp * out_Pos;
 }
