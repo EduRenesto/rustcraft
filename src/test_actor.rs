@@ -25,28 +25,6 @@ pub struct TestActor {
 
 impl TestActor {
     pub fn new(manager: &BlockManager) -> TestActor {
-        //let m = Mesh {
-            //positions: Some(vec![Vector3::<f32>::new(-0.5, -0.5, 0.0),
-                                //Vector3::<f32>::new(0.0, 0.5, 0.0),
-                                //Vector3::<f32>::new(0.5, -0.5, 0.0)]),
-            //normals: Some(vec![Vector3::<f32>::new(-0.5, -0.5, 0.0),
-                                //Vector3::<f32>::new(-0.5, -0.5, 0.0),
-                                //Vector3::<f32>::new(-0.5, -0.5, 0.0)]),
-            //tex_coords: Some(vec![Vector2::<f32>::new(0.0, 0.0),
-                                //Vector2::<f32>::new(0.5, 1.0),
-                                //Vector2::<f32>::new(1.0, 0.0)])
-        //};
-        
-        //let mut blocks = [[[0; 18]; 66]; 18];
-
-        //blocks[1][1][1] = 1;
-        //blocks[2][2][2] = 2;
-
-        //let chunk = Chunk {
-            //blocks: blocks,
-            //position: Vector3::new(0, 0, 0)
-        //};
-        
         let chunks = World::gen_world().chunks;
 
         let m = chunks.iter().map(|c| VertexBuffer::from_mesh(c.gen_mesh(manager)));
@@ -63,7 +41,7 @@ impl TestActor {
         TestActor { 
             vbos: m.collect(), 
             shader: shader,
-            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.00001, 100000.0),
+            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.001, 1000.0),
             view_matrix: Matrix4::look_at(Point3::new(-3.0, 3.0, -3.0), Point3::new(0.0, 0.0, 0.0), Vector3::new(0.0, 1.0, 0.0)),
             text: text,
             time: Cell::new(0.0)

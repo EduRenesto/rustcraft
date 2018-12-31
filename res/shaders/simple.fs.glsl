@@ -1,7 +1,7 @@
 #version 430 core
 
 in vec4 out_Pos;
-in vec3 out_Norm;
+flat in vec3 out_Norm;
 in vec2 out_Uv;
 
 out vec4 out_Color;
@@ -18,9 +18,10 @@ void main() {
     vec4 albedo = texture2D(_Text, out_Uv);
 
     vec3 lightDir = normalize(lightPos - out_Pos.xyz);
-    vec4 diffuse = max(dot(out_Norm, lightDir), 0.0) * lightColor;
+    vec4 diffuse = max(dot(normalize(out_Norm), lightDir), 0.0) * lightColor;
 
     vec4 result = diffuse * albedo;
 
     out_Color = result;
+    //out_Color = vec4(out_Norm, 1.0);
 }

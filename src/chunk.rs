@@ -3,6 +3,8 @@ use crate::mesh::Mesh;
 use crate::block_manager::BlockManager;
 use crate::block::{TERRAIN_WIDTH, TERRAIN_HEIGHT};
 
+use cgmath::ElementWise;
+
 // just to avoid typing the cgmath thing way too much
 type Vec3 = cgmath::Vector3<f32>;
 type Vec2 = cgmath::Vector2<f32>;
@@ -37,6 +39,7 @@ impl Chunk {
 
                     let the_block = manager.get_block(&block).unwrap();
                     let uv_offset = the_block.get_uvs();
+                    let uv_scale = Vec2::new(TERRAIN_WIDTH as f32, TERRAIN_HEIGHT as f32);
 
                     let pos_x = if x < 15 {
                         at(x + 1, y, z)
@@ -82,17 +85,17 @@ impl Chunk {
                         );
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // A
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // B
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // D
 
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
 
-                        uvs.push(uv_offset[0] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[0] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[0] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[0] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[0] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
@@ -104,9 +107,9 @@ impl Chunk {
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
 
-                        uvs.push(uv_offset[0] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[0] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[0] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[0] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                     if neg_x == 0 {
@@ -126,31 +129,31 @@ impl Chunk {
                         };
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // F
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // E
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // G
 
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // G
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // E
+                        positions.push(pos + Vec3::new(0.0, 1.0, 1.0)); // H
 
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                     if pos_y == 0 { 
@@ -170,31 +173,34 @@ impl Chunk {
                         };
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
+                        //positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
+                        //positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
+                        //positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // E
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // D
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // H
 
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // D
+                        positions.push(pos + Vec3::new(1.0, 0.0, 1.0)); // C
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // H
 
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
                         normals.push(Vec3::new(0.0, 1.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                     if neg_y == 0 {
@@ -214,31 +220,31 @@ impl Chunk {
                         };
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // F
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // G
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // A
 
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // A
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // G
+                        positions.push(pos + Vec3::new(1.0, 0.0, 1.0)); // B
 
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
                         normals.push(Vec3::new(0.0, -1.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                     if pos_z == 0 {
@@ -258,31 +264,31 @@ impl Chunk {
                         };
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // B
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // G
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // H
 
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // H
+                        positions.push(pos + Vec3::new(1.0, 1.0, 0.0)); // C
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // B
 
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
                         normals.push(Vec3::new(0.0, 0.0, 1.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                     if neg_z == 0 {
@@ -302,31 +308,31 @@ impl Chunk {
                         };
 
                         // Begin first triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 0.0)); // F
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // A
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // E
 
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0));
-                        positions.push(pos + Vec3::new(1.0, 1.0, 0.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // E
+                        positions.push(pos + Vec3::new(1.0, 0.0, 0.0)); // A
+                        positions.push(pos + Vec3::new(1.0, 1.0, 0.0)); // D
 
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
                         normals.push(Vec3::new(0.0, 0.0, -1.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
-                        uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 0.0 / TERRAIN_HEIGHT as f32));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         // End second triangle
                     }
                 }
