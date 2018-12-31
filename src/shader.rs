@@ -73,4 +73,12 @@ impl Shader {
             gl::UniformMatrix4fv(location, 1, gl::FALSE as GLboolean, mat.as_ptr());
         }
     }
+
+    pub fn uniform_float32(&self, name: String, f: f32) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.handle,
+                            std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
+            gl::Uniform1f(location, f);
+        }
+    }
 }

@@ -8,11 +8,23 @@ type Vec3 = cgmath::Vector3<f32>;
 type IVec3 = cgmath::Vector3<i32>;
 
 pub struct World {
-   chunks: Vec<Chunk>
+   pub chunks: Vec<Chunk>
 }
 
 impl World {
-    pub fn generate_chunk() -> Chunk {
+    pub fn gen_world() -> World {
+       let mut chunks = Vec::<Chunk>::new(); 
+
+       for x in -2..2 {
+           for z in -2..2 {
+               chunks.push(World::generate_chunk(IVec3::new(x, -1, z)));
+           }
+       }
+
+       World { chunks }
+    }
+
+    pub fn generate_chunk(position: IVec3) -> Chunk {
         let noise = OpenSimplex::new();
         noise.set_seed(120934834);
 
@@ -21,10 +33,14 @@ impl World {
         for x in 0..15 {
             for y in 0..63 {
                 for z in 0..15 {
-                    let val = noise.get([x as f64 / 10.0, y as f64 / 10.0, z as f64 / 10.0]);
+                    let pos = Vec3::new((position.x*16 + x) as f32,
+                                        (position.y*64 + y) as f32,
+                                        (position.z*16 + z) as f32) / 10.0;
+
+                    let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]);
 
                     if val <= 0.0 {
-                        blocks[x+1][y+1][z+1] = 2;
+                        blocks[(x+1) as usize][(y+1) as usize][(z+1) as usize] = 2;
                     }
                 }
             }
@@ -32,7 +48,7 @@ impl World {
 
         Chunk {
             blocks: blocks,
-            position: IVec3::new(0, -1, 0)
+            position: position
         }
     }
 }

@@ -66,6 +66,7 @@ fn main() {
             }
         });
 
+        game.update();
         game.render();
 
         gl_window.swap_buffers().unwrap();

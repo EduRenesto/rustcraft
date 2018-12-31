@@ -1,3 +1,5 @@
+use std::cell::Cell;
+
 use cgmath::Vector3;
 use cgmath::Matrix4;
 use cgmath::Point3;
@@ -13,11 +15,12 @@ use crate::world::World;
 use gl::{FRAGMENT_SHADER, VERTEX_SHADER};
 
 pub struct TestActor {
-    vbo: VertexBuffer,
+    vbos: Vec<VertexBuffer>,
     shader: Shader,
     proj_matrix: Matrix4<f32>,
     view_matrix: Matrix4<f32>,
-    text: Texture
+    text: Texture,
+    time: Cell<f32>
 }
 
 impl TestActor {
@@ -44,9 +47,9 @@ impl TestActor {
             //position: Vector3::new(0, 0, 0)
         //};
         
-        let chunk = World::generate_chunk();
+        let chunks = World::gen_world().chunks;
 
-        let m = chunk.gen_mesh(manager);
+        let m = chunks.iter().map(|c| VertexBuffer::from_mesh(c.gen_mesh(manager)));
 
         let shader = Shader::new(vec![Box::new((VERTEX_SHADER, "res/shaders/simple.vs.glsl".to_string())),
                                     Box::new((FRAGMENT_SHADER, "res/shaders/simple.fs.glsl".to_string()))])
@@ -58,11 +61,12 @@ impl TestActor {
             .unwrap();
 
         TestActor { 
-            vbo: VertexBuffer::from_mesh(m), 
+            vbos: m.collect(), 
             shader: shader,
             proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.00001, 100000.0),
             view_matrix: Matrix4::look_at(Point3::new(-3.0, 3.0, -3.0), Point3::new(0.0, 0.0, 0.0), Vector3::new(0.0, 1.0, 0.0)),
-            text: text
+            text: text,
+            time: Cell::new(0.0)
         }
     }
 }
@@ -73,9 +77,15 @@ impl Actor for TestActor {
         self.text.bind();
         self.shader.uniform_mat4x4("_Projection".to_string(), self.proj_matrix);
         self.shader.uniform_mat4x4("_View".to_string(), self.view_matrix);
-        self.vbo.render();
+        self.shader.uniform_float32("_Time".to_string(), self.time.get());
+
+        for vbo in self.vbos.iter() {
+            vbo.render();
+        }
     }
 
-    fn update(&mut self) {
+    fn update(&self) {
+        let val = self.time.get();
+        self.time.set(val + 0.01);
     }
 }

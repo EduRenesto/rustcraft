@@ -31,4 +31,10 @@ impl Game {
             actor.render();
         }
     }
+
+    pub fn update(&self) {
+        for actor in self.actors.iter() {
+            actor.update();
+        }
+    }
 }

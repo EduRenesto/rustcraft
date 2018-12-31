@@ -8,8 +8,10 @@ out vec4 out_Color;
 
 uniform sampler2D _Text;
 
+uniform float _Time;
+
 void main() {
-    vec3 lightPos = vec3(20.0, 4.0, 0.0);
+    vec3 lightPos = vec3(20*sin(_Time), 10, 20*cos(_Time));
     vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
 
     //out_Color = vec4(1.0, 0.0, 1.0, 1.0);
