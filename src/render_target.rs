@@ -19,13 +19,13 @@ impl RenderTarget {
 
             let mut draw_buffers = Vec::<GLenum>::new();
             
-            for i in 0..(num_attachments - 1) {
+            for i in 0..num_attachments {
                 let tex = Texture::new();
                 tex.bind();
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
-                gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as i32,
-                               width as i32, height as i32, 0, gl::RGBA, gl::UNSIGNED_BYTE, std::ptr::null());
+                gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA32F as i32,
+                               width as i32, height as i32, 0, gl::RGBA, gl::FLOAT, std::ptr::null());
                 gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0 + i as u32, gl::TEXTURE_2D, tex.handle, 0);
                 check_gl!();
                 
@@ -41,7 +41,7 @@ impl RenderTarget {
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
                 gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
                 gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as i32,
-                               width as i32, height as i32, 0, gl::RGB, gl::UNSIGNED_BYTE, std::ptr::null());
+                               width as i32, height as i32, 0, gl::RGB16F, gl::FLOAT, std::ptr::null());
                 gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::DEPTH_ATTACHMENT as u32, gl::TEXTURE_2D, tex.handle, 0);
                 check_gl!();
                 Some(tex)

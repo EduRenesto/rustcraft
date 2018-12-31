@@ -53,6 +53,7 @@ impl Actor for TestActor {
     fn render(&self) {
         self.shader.bind();
         self.text.bind();
+        self.shader.uniform_texture("_Text".to_string(), &self.text, 0);
         self.shader.uniform_mat4x4("_Projection".to_string(), self.proj_matrix);
         self.shader.uniform_mat4x4("_View".to_string(), self.view_matrix);
         self.shader.uniform_float32("_Time".to_string(), self.time.get());

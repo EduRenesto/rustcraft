@@ -69,6 +69,8 @@ impl Game {
         }
         self.def.bind(); check_gl!();
         self.def.uniform_texture("_Albedo".to_string(), &self.g_buffer.color_attachments[0], 0); check_gl!();
+        self.def.uniform_texture("_Normal".to_string(), &self.g_buffer.color_attachments[1], 1); 
+        self.def.uniform_texture("_Position".to_string(), &self.g_buffer.color_attachments[2], 2); 
         self.quad.render();
     }
 

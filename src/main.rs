@@ -48,8 +48,6 @@ fn main() {
         gl::ClearColor(0.0, 0.0, 0.0, 1.0);
         gl::Viewport(0, 0, 1280, 720);
         gl::Enable(gl::DEPTH_TEST);
-        //gl::Enable(gl::CULL_FACE);
-        gl::CullFace(gl::BACK);
     }
 
     let mut run = true;
