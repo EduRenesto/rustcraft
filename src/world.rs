@@ -28,7 +28,7 @@ impl World {
         let noise = OpenSimplex::new();
         noise.set_seed(120934834);
 
-        let mut blocks = [[[0; 18]; 66]; 18];
+        let mut blocks = [[[0; 16]; 64]; 16];
 
         for x in 0..15 {
             for y in 0..63 {
@@ -40,7 +40,7 @@ impl World {
                     let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]);
 
                     if val <= 0.0 {
-                        blocks[(x+1) as usize][(y+1) as usize][(z+1) as usize] = 2;
+                        blocks[(x) as usize][(y) as usize][(z) as usize] = 2;
                     }
                 }
             }

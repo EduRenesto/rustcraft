@@ -12,7 +12,7 @@ type IVec3 = cgmath::Vector3<i32>;
 // we add 2 to each dimension because of the edges
 pub struct Chunk {
     // the blocks
-    pub blocks: [[[u32; 18]; 66]; 18], 
+    pub blocks: [[[u32; 16]; 64]; 16], 
 
     // the position (in "chunk space")
     pub position: IVec3
@@ -26,9 +26,9 @@ impl Chunk {
         let mut normals = Vec::<Vec3>::new();
         let mut uvs = Vec::<Vec2>::new();
 
-        for x in 1..16 {
-            for y in 1..64 {
-                for z in 1..16 {
+        for x in 0..15 {
+            for y in 0..63 {
+                for z in 0..15 {
                     let block = at(x, y, z);
 
                     if block == 0 {
@@ -38,21 +38,47 @@ impl Chunk {
                     let the_block = manager.get_block(&block).unwrap();
                     let uv_offset = the_block.get_uvs();
 
-                    let pos_x = at(x + 1, y, z);
-                    let neg_x = at(x - 1, y, z);
-                    let pos_y = at(x, y + 1, z);
-                    let neg_y = at(x, y - 1, z);
-                    let pos_z = at(x, y, z + 1);
-                    let neg_z = at(x, y, z - 1);
+                    let pos_x = if x < 15 {
+                        at(x + 1, y, z)
+                    } else {
+                        1 // dont render the chunk borders!
+                    };
+                    let neg_x = if x > 0 {
+                        at(x - 1, y, z)
+                    } else {
+                        1
+                    };
+
+                    let pos_y = if y < 63 {
+                        at(x, y + 1, z)
+                    } else {
+                        1
+                    };
+                    let neg_y = if y > 0 { 
+                        at(x, y - 1, z)
+                    } else {
+                        0 // always draw and bottom
+                    };
+
+                    let pos_z = if z < 15 {
+                        at(x, y, z + 1)
+                    } else {
+                        1
+                    };
+                    let neg_z = if z > 0 {
+                        at(x, y, z - 1)
+                    } else {
+                        1
+                    };
 
                     if pos_x == 0 {
                         // render the +x face
                         
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + 1 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + 1 + (x as i32)) as f32,
+                            (self.position.y * 63 + (y as i32)) as f32,
+                            (self.position.z * 15 + (z as i32)) as f32
                         );
 
                         // Begin first triangle
@@ -88,9 +114,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + (x as i32)) as f32,
+                            (self.position.y * 63 + (y as i32)) as f32,
+                            (self.position.z * 15 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -132,9 +158,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + 1 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + (x as i32)) as f32,
+                            (self.position.y * 63 + 1 + (y as i32)) as f32,
+                            (self.position.z * 15 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -176,9 +202,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + (x as i32)) as f32,
+                            (self.position.y * 63 + (y as i32)) as f32,
+                            (self.position.z * 15 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -220,9 +246,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + 1 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + (x as i32)) as f32,
+                            (self.position.y * 63 + (y as i32)) as f32,
+                            (self.position.z * 15 + 1 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -264,9 +290,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 16 + (x as i32 - 1)) as f32,
-                            (self.position.y * 64 + (y as i32 - 1)) as f32,
-                            (self.position.z * 16 + (z as i32 - 1)) as f32
+                            (self.position.x * 15 + (x as i32)) as f32,
+                            (self.position.y * 63 + (y as i32)) as f32,
+                            (self.position.z * 15 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
