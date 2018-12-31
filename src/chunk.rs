@@ -44,18 +44,18 @@ impl Chunk {
                     let pos_x = if x < 15 {
                         at(x + 1, y, z)
                     } else {
-                        1 // dont render the chunk borders!
+                        0 // dont render the chunk borders!
                     };
                     let neg_x = if x > 0 {
                         at(x - 1, y, z)
                     } else {
-                        1
+                        0
                     };
 
                     let pos_y = if y < 63 {
                         at(x, y + 1, z)
                     } else {
-                        1
+                        0
                     };
                     let neg_y = if y > 0 { 
                         at(x, y - 1, z)
@@ -66,12 +66,12 @@ impl Chunk {
                     let pos_z = if z < 15 {
                         at(x, y, z + 1)
                     } else {
-                        1
+                        0
                     };
                     let neg_z = if z > 0 {
                         at(x, y, z - 1)
                     } else {
-                        1
+                        0
                     };
 
                     if pos_x == 0 {
@@ -151,7 +151,7 @@ impl Chunk {
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
                         normals.push(Vec3::new(-1.0, 0.0, 0.0));
 
-                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+                        uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         // End second triangle

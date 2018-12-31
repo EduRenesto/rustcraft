@@ -16,6 +16,7 @@ pub mod mesh;
 pub mod vertex_buffer;
 pub mod shader;
 pub mod texture;
+pub mod render_target;
 pub mod actor;
 pub mod test_actor;
 pub mod block;

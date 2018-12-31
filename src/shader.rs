@@ -2,8 +2,10 @@ use gl::types::*;
 
 use cgmath::Matrix;
 
+use crate::texture::Texture;
+
 pub struct Shader {
-    handle: GLuint
+    handle: GLuint,
 }
 
 impl Shader {
@@ -53,7 +55,13 @@ impl Shader {
             gl::GetProgramiv(handle, gl::LINK_STATUS, &mut status);
 
             if status != (gl::TRUE as GLint) {
-                return Err("Shader failed to link!".to_string());
+                let mut len = 0;
+                gl::GetProgramiv(handle, gl::INFO_LOG_LENGTH, &mut len);
+
+                let mut buf = Vec::with_capacity(len as usize);
+                buf.set_len((len as usize) - 1);
+                gl::GetProgramInfoLog(handle, len, std::ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
+                return Err(format!("Link failed: {}", std::str::from_utf8(&buf).unwrap()));
             }
 
             Ok(Shader { handle: handle })
@@ -79,6 +87,17 @@ impl Shader {
             let location = gl::GetUniformLocation(self.handle,
                             std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
             gl::Uniform1f(location, f);
+        }
+    }
+
+    pub fn uniform_texture(&self, name: String, tex: &Texture, slot: u32) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.handle,
+                            std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
+            
+            gl::ActiveTexture(gl::TEXTURE0 + slot);
+            tex.bind();
+            gl::Uniform1i(location, slot as i32);
         }
     }
 }

@@ -3,7 +3,7 @@ use gl::types::*;
 use stb_image::image;
 
 pub struct Texture {
-    handle: GLuint 
+    pub handle: GLuint 
 }
 
 impl Texture {

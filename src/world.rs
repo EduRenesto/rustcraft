@@ -26,7 +26,8 @@ impl World {
 
     pub fn generate_chunk(position: IVec3) -> Chunk {
         let noise = OpenSimplex::new();
-        noise.set_seed(120934834);
+        //noise.set_seed(120934834);
+        noise.set_seed(1831823);
 
         let mut blocks = [[[0; 16]; 64]; 16];
 
@@ -35,12 +36,18 @@ impl World {
                 for z in 0..15 {
                     let pos = Vec3::new((position.x*16 + x) as f32,
                                         (position.y*64 + y) as f32,
-                                        (position.z*16 + z) as f32) / 10.0;
+                                        (position.z*16 + z) as f32) / 20.0;
 
                     let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]);
 
                     if val <= 0.0 {
-                        blocks[(x) as usize][(y) as usize][(z) as usize] = 2;
+                        let block = if y > 50 {
+                            2
+                        } else {
+                            1
+                        };
+
+                        blocks[(x) as usize][(y) as usize][(z) as usize] = block;
                     }
                 }
             }
