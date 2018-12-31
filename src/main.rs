@@ -2,6 +2,7 @@ extern crate cgmath;
 extern crate glutin;
 extern crate gl;
 extern crate stb_image;
+extern crate noise;
 
 use glutin::GlContext;
 
@@ -19,13 +20,12 @@ pub mod actor;
 pub mod test_actor;
 pub mod block;
 pub mod chunk;
+pub mod world;
 
 #[macro_use]
 pub mod block_manager;
 
 fn main() {
-    println!("Starting Rustcraft...");
-
     let mut events_loop = glutin::EventsLoop::new();
     let window = glutin::WindowBuilder::new()
         .with_title("Rustcraft")
@@ -47,6 +47,7 @@ fn main() {
         gl::ClearColor(0.0, 0.0, 0.0, 1.0);
         gl::Viewport(0, 0, 1280, 720);
         gl::Enable(gl::DEPTH_TEST);
+        gl::CullFace(gl::BACK);
     }
 
     let mut run = true;

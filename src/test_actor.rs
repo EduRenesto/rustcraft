@@ -8,6 +8,7 @@ use crate::shader::Shader;
 use crate::texture::Texture;
 use crate::block_manager::BlockManager;
 use crate::chunk::Chunk;
+use crate::world::World;
 
 use gl::{FRAGMENT_SHADER, VERTEX_SHADER};
 
@@ -33,15 +34,17 @@ impl TestActor {
                                 //Vector2::<f32>::new(1.0, 0.0)])
         //};
         
-        let mut blocks = [[[0; 18]; 66]; 18];
+        //let mut blocks = [[[0; 18]; 66]; 18];
 
-        blocks[1][1][1] = 1;
-        blocks[2][2][2] = 2;
+        //blocks[1][1][1] = 1;
+        //blocks[2][2][2] = 2;
 
-        let chunk = Chunk {
-            blocks: blocks,
-            position: Vector3::new(0, 0, 0)
-        };
+        //let chunk = Chunk {
+            //blocks: blocks,
+            //position: Vector3::new(0, 0, 0)
+        //};
+        
+        let chunk = World::generate_chunk();
 
         let m = chunk.gen_mesh(manager);
 

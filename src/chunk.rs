@@ -74,9 +74,9 @@ impl Chunk {
                         positions.push(pos + Vec3::new(0.0, 1.0, 1.0));
                         positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
 
-                        normals.push(Vec3::new(1.0, 0.0, 0.0));
-                        normals.push(Vec3::new(1.0, 0.0, 0.0));
-                        normals.push(Vec3::new(1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
 
                         uvs.push(uv_offset[0] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         uvs.push(uv_offset[0] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
@@ -118,9 +118,9 @@ impl Chunk {
                         positions.push(pos + Vec3::new(0.0, 1.0, 1.0));
                         positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
 
-                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
-                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
-                        normals.push(Vec3::new(-1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(1.0, 0.0, 0.0));
+                        normals.push(Vec3::new(1.0, 0.0, 0.0));
 
                         uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
@@ -250,9 +250,9 @@ impl Chunk {
                         positions.push(pos + Vec3::new(1.0, 1.0, 0.0));
                         positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
 
-                        normals.push(Vec3::new(0.0, 0.0, 1.0));
-                        normals.push(Vec3::new(0.0, 0.0, 1.0));
-                        normals.push(Vec3::new(0.0, 0.0, 1.0));
+                        normals.push(Vec3::new(0.0, 0.0, -1.0));
+                        normals.push(Vec3::new(0.0, 0.0, -1.0));
+                        normals.push(Vec3::new(0.0, 0.0, -1.0));
 
                         uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
@@ -294,9 +294,9 @@ impl Chunk {
                         positions.push(pos + Vec3::new(1.0, 1.0, 0.0));
                         positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
 
-                        normals.push(Vec3::new(0.0, 0.0, -1.0));
-                        normals.push(Vec3::new(0.0, 0.0, -1.0));
-                        normals.push(Vec3::new(0.0, 0.0, -1.0));
+                        normals.push(Vec3::new(0.0, 0.0, 1.0));
+                        normals.push(Vec3::new(0.0, 0.0, 1.0));
+                        normals.push(Vec3::new(0.0, 0.0, 1.0));
 
                         uvs.push(uv_offset[idx] + Vec2::new(0.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0 / TERRAIN_WIDTH as f32, 1.0 / TERRAIN_HEIGHT as f32));
