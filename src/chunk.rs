@@ -27,6 +27,7 @@ impl Chunk {
         let mut positions = Vec::<Vec3>::new();
         let mut normals = Vec::<Vec3>::new();
         let mut uvs = Vec::<Vec2>::new();
+        let mut occlusion = Vec::<f32>::new();
 
         for x in 0..15 {
             for y in 0..63 {
@@ -41,6 +42,7 @@ impl Chunk {
                     let uv_offset = the_block.get_uvs();
                     let uv_scale = Vec2::new(TERRAIN_WIDTH as f32, TERRAIN_HEIGHT as f32);
 
+                    // Calculate the immediate neighbors
                     let pos_x = if x < 15 {
                         at(x + 1, y, z)
                     } else {
@@ -74,6 +76,89 @@ impl Chunk {
                         0
                     };
 
+                    // Calculate the "indirect" neighbors
+                    // This is used for the occlusion approximation
+                    let pos_x_pos_y = if x < 15 && y < 63 {
+                        at(x + 1, y + 1, z)
+                    } else {
+                        // TODO fix this
+                        // This will generate incorrect occlusion values
+                        // for chunk borders :(
+                        0
+                    };
+                    let pos_x_neg_y = if x < 15 && y > 0 {
+                        at(x + 1, y - 1, z)
+                    } else {
+                        0
+                    };
+                    let pos_x_pos_z = if x < 15 && z < 15 {
+                        at(x + 1, y, z + 1)
+                    } else {
+                        0
+                    };
+                    let pos_x_neg_z = if x < 15 && z > 0 {
+                        at(x + 1, y, z - 1)
+                    } else {
+                        0
+                    };
+
+                    let neg_x_pos_y = if x > 0 && y < 63 {
+                        at(x - 1, y + 1, z)
+                    } else {
+                        0
+                    };
+                    let neg_x_neg_y = if x > 0 && y > 0 {
+                        at(x - 1, y - 1, z)
+                    } else {
+                        0
+                    };
+                    let neg_x_pos_z = if x > 0 && z < 15 {
+                        at(x - 1, y, z + 1)
+                    } else {
+                        0
+                    };
+                    let neg_x_neg_z = if x > 0 && z > 0 {
+                        at(x - 1, y, z - 1)
+                    } else {
+                        0
+                    };
+
+                    let pos_y_pos_z = if y < 63 && z < 15 {
+                        at(x, y + 1, z + 1)
+                    } else {
+                        0
+                    };
+                    let pos_y_neg_z = if y < 63 && z > 0 {
+                        at(x, y + 1, z - 1)
+                    } else {
+                        0
+                    };
+                    
+                    let neg_y_pos_z = if y > 0 && z < 15 {
+                        at(x, y - 1, z + 1)
+                    } else {
+                        0
+                    };
+                    let neg_y_neg_z = if y > 0 && z > 0 {
+                        at(x, y - 1, z - 1)
+                    } else {
+                        0
+                    };
+
+                    let neighbors: Vec<u8> = vec![pos_x_pos_y, pos_x_neg_y,
+                                        pos_x_pos_z, pos_x_neg_z,
+                                        neg_x_pos_y, neg_x_neg_y,
+                                        neg_x_pos_z, neg_x_neg_z,
+                                        pos_y_pos_z, pos_y_neg_z,
+                                        neg_y_pos_z, neg_y_neg_z]
+                        .iter().map(|i| {
+                            if *i != 0 {
+                                1
+                            } else {
+                                0
+                            }
+                        }).collect();
+
                     if pos_x == 0 {
                         // render the +x face
                         
@@ -96,12 +181,16 @@ impl Chunk {
                         uvs.push(uv_offset[0] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[0] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[0] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![1, 3, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 2, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 1, 09].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
-                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 1.0));
-                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0));
+                        positions.push(pos + Vec3::new(0.0, 0.0, 1.0)); // B
+                        positions.push(pos + Vec3::new(0.0, 1.0, 1.0)); // C
+                        positions.push(pos + Vec3::new(0.0, 1.0, 0.0)); // D
 
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
                         normals.push(Vec3::new(1.0, 0.0, 0.0));
@@ -110,6 +199,10 @@ impl Chunk {
                         uvs.push(uv_offset[0] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[0] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[0] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![1, 2, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 2, 08].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 1, 09].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                     if neg_x == 0 {
@@ -140,6 +233,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![5, 7, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 7, 9].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![5, 6, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
@@ -154,6 +251,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![5, 6, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 7, 9].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 8, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                     if pos_y == 0 { 
@@ -187,6 +288,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![4, 7, 9].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 1, 9].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 8, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
@@ -201,6 +306,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![0, 1, 9].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 2, 8].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 8, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                     if neg_y == 0 {
@@ -231,6 +340,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![5, 7, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![5, 6, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 3, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
@@ -245,6 +358,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![1, 3, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![5, 6, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 2, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                     if pos_z == 0 {
@@ -275,6 +392,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![1, 2, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![5, 6, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 8, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
@@ -289,6 +410,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![4, 8, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 2, 08].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 2, 10].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                     if neg_z == 0 {
@@ -319,6 +444,10 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![5, 7, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 3, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![4, 7, 09].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End first triangle
                         
                         // Begin second triangle
@@ -333,12 +462,21 @@ impl Chunk {
                         uvs.push(uv_offset[idx] + Vec2::new(0.0, 1.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 0.0).div_element_wise(uv_scale));
                         uvs.push(uv_offset[idx] + Vec2::new(1.0, 1.0).div_element_wise(uv_scale));
+
+                        occlusion.push(vec![4, 7, 09].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![1, 3, 11].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
+                        occlusion.push(vec![0, 1, 09].iter().map(|i| neighbors[*i] as f32 / 3.0).sum());
                         // End second triangle
                     }
                 }
             }
         }
 
-        Mesh { positions: Some(positions), normals: Some(normals), tex_coords: Some(uvs) }
+        Mesh { 
+            positions: Some(positions), 
+            normals: Some(normals), 
+            tex_coords: Some(uvs),
+            occlusion: Some(occlusion)
+        }
     }
 }

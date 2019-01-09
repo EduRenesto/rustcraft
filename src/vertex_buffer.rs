@@ -67,6 +67,19 @@ impl VertexBuffer {
                 }, 
                 None => {}
             }
+
+            match mesh.occlusion {
+                Some(occlusion) => {
+                    let mut occlusion_handle = 0 as GLuint;
+                    gl::GenBuffers(1, &mut occlusion_handle);
+                    gl::BindBuffer(gl::ARRAY_BUFFER, occlusion_handle);
+                    gl::BufferData(gl::ARRAY_BUFFER, (occlusion.len() * std::mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        occlusion.as_ptr() as *const GLvoid, gl::STATIC_DRAW);
+                    gl::VertexAttribPointer(3, 1, gl::FLOAT, gl::FALSE as GLboolean, 0, std::ptr::null());
+                    gl::EnableVertexAttribArray(3);
+                },
+                None => {}
+            }
         }
 
         VertexBuffer { handle: handle, total_vertices: total_vertices }

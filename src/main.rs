@@ -22,6 +22,7 @@ pub mod test_actor;
 pub mod block;
 pub mod chunk;
 pub mod world;
+pub mod fps_camera;
 
 #[macro_use]
 pub mod block_manager;
@@ -51,18 +52,48 @@ fn main() {
     }
 
     let mut run = true;
+    let mut paused = false;
 
     while run {
         events_loop.poll_events(|evt| {
             match evt {
-                glutin::Event::WindowEvent {
-                    event: glutin::WindowEvent::CloseRequested, 
-                    ..
-                } => {
-                    run = false;
-                }
-                _ => {
-                }
+                //glutin::Event::WindowEvent {
+                    //event: glutin::WindowEvent::CloseRequested, 
+                    //..
+                //} => {
+                    //run = false;
+                //}, 
+                //glutin::Event::WindowEvent {
+                    //event: glutin::WindowEvent::KeyboardInput { input: glutin::KeyboardInput {..}, .. },
+                    //..
+                //} => {
+                    //game.keyboard_input(input)
+                //}
+                //_ => {
+                //}
+                glutin::Event::WindowEvent { event, .. } => {
+                    match event {
+                        glutin::WindowEvent::CloseRequested => run = false,
+                        glutin::WindowEvent::KeyboardInput { input, .. } => {
+                            if let Some(k) = input.virtual_keycode {
+                                if k == glutin::VirtualKeyCode::Escape {
+                                    paused = !paused;
+                                }
+                            }
+
+                            if !paused {
+                                game.keyboard_input(input);
+                            }    
+                        },
+                        glutin::WindowEvent::CursorMoved { position, .. } => {
+                            if !paused {
+                                game.mouse_input(position);
+                            }
+                        },
+                        _ => {}
+                    }
+                }, 
+                _ => {}
             }
         });
 
@@ -70,5 +101,10 @@ fn main() {
         game.render();
 
         gl_window.swap_buffers().unwrap();
+
+        if !paused {
+            gl_window.set_cursor_position(
+                glutin::dpi::LogicalPosition::new(1280.0/2.0, 720.0/2.0)).unwrap();
+        }
     }
 }

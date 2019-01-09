@@ -3,10 +3,12 @@
 in vec4 out_Pos;
 flat in vec3 out_Norm;
 in vec2 out_Uv;
+in float out_Occlusion;
 
 layout (location=0) out vec4 def_Color;
 layout (location=1) out vec4 def_Norm;
 layout (location=2) out vec4 def_Pos;
+layout (location=3) out vec4 def_Occlusion;
 
 uniform sampler2D _Text;
 
@@ -30,4 +32,5 @@ void main() {
     def_Color = texture2D(_Text, out_Uv);
     def_Norm = vec4(out_Norm, 1.0);
     def_Pos = out_Pos;
+    def_Occlusion = vec4(vec3(out_Occlusion), 1.0);
 }

@@ -1,15 +1,16 @@
 use std::cell::Cell;
+use std::cell::Ref;
 
 use cgmath::Vector3;
 use cgmath::Matrix4;
 use cgmath::Point3;
 
 use crate::actor::Actor;
+use crate::fps_camera::FpsCamera;
 use crate::vertex_buffer::VertexBuffer;
 use crate::shader::Shader;
 use crate::texture::Texture;
 use crate::block_manager::BlockManager;
-use crate::chunk::Chunk;
 use crate::world::World;
 
 use gl::{FRAGMENT_SHADER, VERTEX_SHADER};
@@ -50,12 +51,12 @@ impl TestActor {
 }
 
 impl Actor for TestActor {
-    fn render(&self) {
+    fn render(&self, camera: Ref<FpsCamera>) {
         self.shader.bind();
         self.text.bind();
         self.shader.uniform_texture("_Text".to_string(), &self.text, 0);
         self.shader.uniform_mat4x4("_Projection".to_string(), self.proj_matrix);
-        self.shader.uniform_mat4x4("_View".to_string(), self.view_matrix);
+        self.shader.uniform_mat4x4("_View".to_string(), camera.get_view_matrix());
         self.shader.uniform_float32("_Time".to_string(), self.time.get());
 
         for vbo in self.vbos.iter() {
