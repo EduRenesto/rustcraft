@@ -1,41 +1,54 @@
+use std::cell::Cell;
+
 pub struct FpsCamera {
-    position: cgmath::Point3<f32>,
+    position: Cell<cgmath::Point3<f32>>,
     speed: f32,
 
     hor_angle: f32,
     ver_angle: f32,
-    direction: cgmath::Vector3<f32>,
-    right: cgmath::Vector3<f32>
+    pub direction: cgmath::Vector3<f32>,
+    right: cgmath::Vector3<f32>,
+
+    // TODO remove this once input is properly done
+    movement: cgmath::Vector3<f32>
 }
 
 impl FpsCamera {
     pub fn new(pos: cgmath::Point3<f32>, speed: f32) -> FpsCamera {
         FpsCamera { 
-            position: pos, 
+            position: Cell::new(pos), 
             hor_angle: 0.0, 
             ver_angle: 0.0, 
             speed: speed,
             direction: cgmath::Vector3::new(0.0, 0.0, 1.0),
-            right: cgmath::Vector3::new(1.0, 0.0, 0.0)
+            right: cgmath::Vector3::new(1.0, 0.0, 0.0),
+            movement: cgmath::Vector3::new(0.0, 0.0, 0.0)
         }
     }
 
+    // TODO offload the movement calculation to another method
+    // so we can update the movement vector while we move the mouse
     pub fn keyboard_input(&mut self, input: glutin::KeyboardInput) {
-        match input.scancode {
+        let mult = match input.state {
+            glutin::ElementState::Pressed => 1.0,
+            glutin::ElementState::Released => 0.0
+        };
+
+        self.movement = mult * match input.scancode {
             17 => {
-                self.position += self.direction * self.speed;
+                self.direction * self.speed
             },
             30 => {
-                self.position += self.right * -self.speed;
+                self.right * -self.speed
             },
             31 => {
-                self.position += self.direction * -self.speed;
+                self.direction * -self.speed
             },
             32 => {
-                self.position += self.right * self.speed;
+                self.right * self.speed
             },
-            _ => {}
-        }
+            _ => self.movement
+        };
     }
     
     pub fn mouse_input(&mut self, pos: glutin::dpi::LogicalPosition) {
@@ -51,9 +64,10 @@ impl FpsCamera {
     }
 
     pub fn get_view_matrix(&self) -> cgmath::Matrix4<f32> {
-
         let up = self.right.cross(self.direction);
 
-        cgmath::Matrix4::look_at(self.position, self.position + self.direction, up)
+        self.position.set(self.position.get() + self.movement);
+
+        cgmath::Matrix4::look_at(self.position.get(), self.position.get() + self.direction, up)
     }
 }

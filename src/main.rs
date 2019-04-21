@@ -74,17 +74,6 @@ fn main() {
                 glutin::Event::WindowEvent { event, .. } => {
                     match event {
                         glutin::WindowEvent::CloseRequested => run = false,
-                        glutin::WindowEvent::KeyboardInput { input, .. } => {
-                            if let Some(k) = input.virtual_keycode {
-                                if k == glutin::VirtualKeyCode::Escape {
-                                    paused = !paused;
-                                }
-                            }
-
-                            if !paused {
-                                game.keyboard_input(input);
-                            }    
-                        },
                         glutin::WindowEvent::CursorMoved { position, .. } => {
                             if !paused {
                                 game.mouse_input(position);
@@ -93,6 +82,22 @@ fn main() {
                         _ => {}
                     }
                 }, 
+                glutin::Event::DeviceEvent { event, .. } => {
+                    match event {
+                        glutin::DeviceEvent::Key(input) => {
+                            if let Some(k) = input.virtual_keycode {
+                                if k == glutin::VirtualKeyCode::Escape && input.state == glutin::ElementState::Released {
+                                    paused = !paused;
+                                }
+                            }
+
+                            if !paused {
+                                game.keyboard_input(input);
+                            }    
+                        },
+                        _ => {}
+                    }
+                }
                 _ => {}
             }
         });
