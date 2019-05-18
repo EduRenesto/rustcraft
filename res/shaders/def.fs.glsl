@@ -23,5 +23,6 @@ void main() {
     vec3 lightDir = normalize(lightPos - position);
     vec4 diffuse = max(dot(normalize(normal), lightDir), 0.0) * lightColor;
 
-    out_Color = occlusion * diffuse * color;
+    //out_Color = occlusion * diffuse * color; 
+    out_Color = color * ((ambient * occlusion) + diffuse);
 }
