@@ -65,6 +65,7 @@ impl Game {
             IVec2::new(8, 0),
             IVec2::new(8, 0)
         ]));
+        manager.add_block(4, Block::new("Cloud", false, vec![IVec2::new(2, 4)]));
 
         let gizmo = VertexBuffer::from_mesh(Mesh {
             positions: Some(vec![Vec3::new(-0.1, -0.1, 0.0), // F

@@ -41,10 +41,14 @@ impl World {
                     let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]);
 
                     if val <= 0.0 {
-                        let block = if y > 50 {
-                            3
-                        } else {
+                        let block = if 0 <= y && y <= 20 {
                             1
+                        } else if y > 20 && y <= 30 {
+                            3
+                        } else if y == 50 {
+                            4
+                        } else {
+                            0
                         };
 
                         blocks[(x) as usize][(y) as usize][(z) as usize] = block;
