@@ -4,8 +4,8 @@ pub struct FpsCamera {
     position: Cell<cgmath::Point3<f32>>,
     speed: f32,
 
-    hor_angle: f32,
-    ver_angle: f32,
+    pub hor_angle: f32,
+    pub ver_angle: f32,
     pub direction: cgmath::Vector3<f32>,
     right: cgmath::Vector3<f32>,
 

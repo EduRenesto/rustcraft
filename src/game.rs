@@ -25,7 +25,6 @@ pub struct Game {
     camera: RefCell<FpsCamera>,
     gizmo: VertexBuffer,
     gizmo_shader: Shader,
-    gizmo_texture: Texture
 }
 
 impl Game {
@@ -68,61 +67,68 @@ impl Game {
         manager.add_block(4, Block::new("Cloud", false, vec![IVec2::new(2, 4)]));
 
         let gizmo = VertexBuffer::from_mesh(Mesh {
-            positions: Some(vec![Vec3::new(-0.1, -0.1, 0.0), // F
-                            Vec3::new(0.1, -0.1, 0.0), // A
-                            Vec3::new(-0.1, 0.1, 0.0), // E
-                            Vec3::new(-0.1, 0.1, 0.0), // E
-                            Vec3::new(0.1, -0.1, 0.0), // A
-                            Vec3::new(0.1, 0.1, 0.0), // D
+            positions: Some(vec![
+                // x
+                Vec3::new(-0.2, 0.0, 0.0),
+                Vec3::new(-0.2, 0.2, 0.2),
+                Vec3::new(-0.2, 0.2, 0.2),
+                Vec3::new(-0.2, 0.2, 0.2),
+                Vec3::new(-0.2, 0.0, 0.0),
+                Vec3::new(-0.2, 0.0, 0.0),
 
-                            Vec3::new(0.0, -0.1, -0.1), // F
-                            Vec3::new(0.0, -0.1, 0.1), // A
-                            Vec3::new(0.0, 0.1, -0.1), // E
-                            Vec3::new(0.0, 0.1, -0.1), // E
-                            Vec3::new(0.0, -0.1, 0.1), // A
-                            Vec3::new(0.0, 0.1, 0.1), // D
+                // y
+                Vec3::new(0.0, -0.2, 0.0),
+                Vec3::new(0.2, -0.2, 0.0),
+                Vec3::new(0.2, -0.2, 0.2),
+                Vec3::new(0.2, -0.2, 0.2),
+                Vec3::new(0.0, -0.2, 0.2),
+                Vec3::new(0.0, -0.2, 0.0),
 
-                            Vec3::new(-0.1, 0.0, -0.1), // F
-                            Vec3::new(-0.1, 0.0, 0.1), // A
-                            Vec3::new(0.1, 0.0, -0.1), // E
-                            Vec3::new(0.1, 0.0, -0.1), // E
-                            Vec3::new(-0.1, 0.0, 0.1), // A
-                            Vec3::new(0.1, 0.0, 0.1), // D
+                // z
+                Vec3::new(0.0, 0.0, -0.2),
+                Vec3::new(0.2, 0.0, -0.2),
+                Vec3::new(0.2, 0.2, -0.2),
+                Vec3::new(0.2, 0.2, -0.2),
+                Vec3::new(0.0, 0.2, -0.2),
+                Vec3::new(0.0, 0.0, -0.2),
             ]),
 
-            normals: None,
-            tex_coords: Some(vec![Vec2::new(0.0, 0.0),
-                                Vec2::new(1.0 / 3.0, 0.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(1.0/3.0, 0.0),
-                                Vec2::new(1.0/3.0, 1.0),
-            
-                                Vec2::new(0.0, 0.0),
-                                Vec2::new(2.0 / 3.0, 0.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(2.0/3.0, 0.0),
-                                Vec2::new(2.0/3.0, 1.0),
-            
-                                Vec2::new(0.0, 0.0),
-                                Vec2::new(3.0 / 3.0, 0.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(0.0, 1.0),
-                                Vec2::new(3.0/3.0, 0.0),
-                                Vec2::new(3.0/3.0, 1.0)
+            normals: Some(vec![
+                // x
+                Vec3::new(1.0, 0.0, 0.0),
+                Vec3::new(1.0, 0.0, 0.0),
+                Vec3::new(1.0, 0.0, 0.0),
+                Vec3::new(1.0, 0.0, 0.0),
+                Vec3::new(1.0, 0.0, 0.0),
+                Vec3::new(1.0, 0.0, 0.0),
+
+                // y
+                Vec3::new(0.0, 1.0, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+                Vec3::new(0.0, 1.0, 0.0),
+
+                // z
+                Vec3::new(0.0, 0.0, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
             ]),
+            tex_coords: None,
             occlusion: None
         });
 
-        let gizmo_texture = Texture::from_file("res/textures/gizmo.png".to_string(), gl::NEAREST as i32, gl::NEAREST as i32).unwrap();
         let gizmo_shader = Shader::new(vec![Box::new((gl::FRAGMENT_SHADER, "res/shaders/gizmo.fs.glsl".to_string())),
                                             Box::new((gl::VERTEX_SHADER, "res/shaders/gizmo.vs.glsl".to_string()))]).unwrap();
 
         let a = TestActor::new(&manager);
         Game { actors: vec![Box::new(a)], g_buffer: g_buffer, quad: quad, def: def.unwrap(),
                 camera: RefCell::new(FpsCamera::new(cgmath::Point3::new(0.0, 0.0, 0.0), 0.5)),
-                gizmo: gizmo, gizmo_texture: gizmo_texture, gizmo_shader: gizmo_shader
+                gizmo: gizmo, gizmo_shader: gizmo_shader
         }
     }
 
@@ -145,6 +151,14 @@ impl Game {
         self.def.uniform_texture("_Position".to_string(), &self.g_buffer.color_attachments[2], 2); 
         self.def.uniform_texture("_Occlusion".to_string(), &self.g_buffer.color_attachments[3], 3);
         self.quad.render();
+
+        let roty = cgmath::Matrix4::from_angle_y(cgmath::Rad(self.camera.borrow().hor_angle));
+        let rotx = cgmath::Matrix4::from_angle_x(cgmath::Rad(self.camera.borrow().ver_angle));
+
+        self.gizmo_shader.bind();
+        self.gizmo_shader.uniform_mat4x4("_RotX".to_string(), rotx);
+        self.gizmo_shader.uniform_mat4x4("_RotY".to_string(), roty);
+        self.gizmo.render();
 
         //unsafe { gl::Disable(gl::DEPTH_TEST); }
         //self.gizmo_shader.bind();

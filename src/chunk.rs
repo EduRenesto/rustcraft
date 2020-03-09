@@ -14,7 +14,7 @@ type IVec3 = cgmath::Vector3<i32>;
 // we add 2 to each dimension because of the edges
 pub struct Chunk {
     // the blocks
-    pub blocks: [[[u32; 16]; 64]; 16], 
+    pub blocks: [[[u32; 18]; 64]; 18], 
 
     // the position (in "chunk space")
     pub position: IVec3
@@ -33,9 +33,9 @@ impl Chunk {
         let mut uvs = Vec::<Vec2>::new();
         let mut occlusion = Vec::<f32>::new();
 
-        for x in 0..15 {
-            for y in 0..63 {
-                for z in 0..15 {
+        for x in 1..=16 {
+            for y in 0..=63 {
+                for z in 1..=16 {
                     let block = at(x, y, z);
 
                     if block == 0 {
@@ -46,107 +46,57 @@ impl Chunk {
                     let uv_offset = the_block.get_uvs();
                     let uv_scale = Vec2::new(TERRAIN_WIDTH as f32, TERRAIN_HEIGHT as f32);
 
-                    // Calculate the immediate neighbors
-                    let pos_x = if x < 15 {
-                        at(x + 1, y, z)
-                    } else {
-                        0 // dont render the chunk borders!
-                    };
-                    let neg_x = if x > 0 {
-                        at(x - 1, y, z)
-                    } else {
-                        0
-                    };
+                    let pos_x = at(x + 1, y, z);
+                    let neg_x = at(x - 1, y, z);
+                    let pos_z = at(x, y, z + 1);
+                    let neg_z = at(x, y, z - 1);
 
-                    let pos_y = if y < 63 {
+                    let pos_y = if y == 64 {
+                        0
+                    } else {
                         at(x, y + 1, z)
-                    } else {
-                        0
                     };
-                    let neg_y = if y > 0 { 
+                    let neg_y = if y == 0 {
+                        0
+                    } else {
                         at(x, y - 1, z)
-                    } else {
-                        0 // always draw and bottom
                     };
 
-                    let pos_z = if z < 15 {
-                        at(x, y, z + 1)
-                    } else {
+                    let pos_x_pos_y = if y == 64 {
                         0
-                    };
-                    let neg_z = if z > 0 {
-                        at(x, y, z - 1)
                     } else {
-                        0
-                    };
-
-                    // Calculate the "indirect" neighbors
-                    // This is used for the occlusion approximation
-                    let pos_x_pos_y = if x < 15 && y < 63 {
                         at(x + 1, y + 1, z)
-                    } else {
-                        // TODO fix this
-                        // This will generate incorrect occlusion values
-                        // for chunk borders :(
-                        0
                     };
-                    let pos_x_neg_y = if x < 15 && y > 0 {
+                    let pos_x_neg_y = if y == 0 {
+                        0
+                    } else {
                         at(x + 1, y - 1, z)
-                    } else {
-                        0
                     };
-                    let pos_x_pos_z = if x < 15 && z < 15 {
-                        at(x + 1, y, z + 1)
-                    } else {
-                        0
-                    };
-                    let pos_x_neg_z = if x < 15 && z > 0 {
-                        at(x + 1, y, z - 1)
-                    } else {
-                        0
-                    };
+                    let pos_x_pos_z = at(x + 1, y, z + 1);
+                    let pos_x_neg_z = at(x + 1, y, z - 1);
 
-                    let neg_x_pos_y = if x > 0 && y < 63 {
+                    let neg_x_pos_y = if y == 64 {
+                        0
+                    } else {
                         at(x - 1, y + 1, z)
-                    } else {
-                        0
                     };
-                    let neg_x_neg_y = if x > 0 && y > 0 {
+                    let neg_x_neg_y = if y == 0 {
+                        0
+                    } else {
                         at(x - 1, y - 1, z)
-                    } else {
-                        0
                     };
-                    let neg_x_pos_z = if x > 0 && z < 15 {
-                        at(x - 1, y, z + 1)
-                    } else {
-                        0
-                    };
-                    let neg_x_neg_z = if x > 0 && z > 0 {
-                        at(x - 1, y, z - 1)
-                    } else {
-                        0
-                    };
+                    let neg_x_pos_z = at(x - 1, y, z + 1);
+                    let neg_x_neg_z = at(x - 1, y, z - 1);
 
-                    let pos_y_pos_z = if y < 63 && z < 15 {
-                        at(x, y + 1, z + 1)
+                    let (pos_y_pos_z, pos_y_neg_z) = if y == 64 {
+                        (0, 0)
                     } else {
-                        0
+                        (at(x, y + 1, z + 1), at(x, y + 1, z - 1))
                     };
-                    let pos_y_neg_z = if y < 63 && z > 0 {
-                        at(x, y + 1, z - 1)
+                    let (neg_y_pos_z, neg_y_neg_z) = if y == 0 {
+                        (0, 0)
                     } else {
-                        0
-                    };
-                    
-                    let neg_y_pos_z = if y > 0 && z < 15 {
-                        at(x, y - 1, z + 1)
-                    } else {
-                        0
-                    };
-                    let neg_y_neg_z = if y > 0 && z > 0 {
-                        at(x, y - 1, z - 1)
-                    } else {
-                        0
+                        (at(x, y - 1, z + 1), at(x, y - 1, z - 1))
                     };
 
                     let neighbors: Vec<u8> = vec![pos_x_pos_y, pos_x_neg_y,
@@ -168,9 +118,9 @@ impl Chunk {
                         
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + 1 + (x as i32)) as f32,
-                            (self.position.y * 63 + (y as i32)) as f32,
-                            (self.position.z * 15 + (z as i32)) as f32
+                            (self.position.x * 16 + 1 + (x as i32)) as f32,
+                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.z * 16 + (z as i32)) as f32
                         );
 
                         // Begin first triangle
@@ -214,9 +164,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + (x as i32)) as f32,
-                            (self.position.y * 63 + (y as i32)) as f32,
-                            (self.position.z * 15 + (z as i32)) as f32
+                            (self.position.x * 16 + (x as i32)) as f32,
+                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.z * 16 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -266,9 +216,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + (x as i32)) as f32,
-                            (self.position.y * 63 + 1 + (y as i32)) as f32,
-                            (self.position.z * 15 + (z as i32)) as f32
+                            (self.position.x * 16 + (x as i32)) as f32,
+                            (self.position.y * 64 + 1 + (y as i32)) as f32,
+                            (self.position.z * 16 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -321,9 +271,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + (x as i32)) as f32,
-                            (self.position.y * 63 + (y as i32)) as f32,
-                            (self.position.z * 15 + (z as i32)) as f32
+                            (self.position.x * 16 + (x as i32)) as f32,
+                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.z * 16 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -373,9 +323,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + (x as i32)) as f32,
-                            (self.position.y * 63 + (y as i32)) as f32,
-                            (self.position.z * 15 + 1 + (z as i32)) as f32
+                            (self.position.x * 16 + (x as i32)) as f32,
+                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.z * 16 + 1 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
@@ -425,9 +375,9 @@ impl Chunk {
 
                         // position of the face
                         let pos = Vec3::new(
-                            (self.position.x * 15 + (x as i32)) as f32,
-                            (self.position.y * 63 + (y as i32)) as f32,
-                            (self.position.z * 15 + (z as i32)) as f32
+                            (self.position.x * 16 + (x as i32)) as f32,
+                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.z * 16 + (z as i32)) as f32
                         );
 
                         let idx = if the_block.orientable {
