@@ -15,8 +15,8 @@ impl World {
     pub fn gen_world() -> World {
        let mut chunks = Vec::<Chunk>::new(); 
 
-       for x in -2..2 {
-           for z in -2..2 {
+       for x in -5..5 {
+           for z in -5..5 {
                chunks.push(World::generate_chunk(IVec3::new(x, -1, z)));
            }
        }
@@ -37,8 +37,12 @@ impl World {
                     let pos = Vec3::new((position.x*16 + x) as f32,
                                         (position.y*64 + y) as f32,
                                         (position.z*16 + z) as f32) / 30.0;
+                    let octave = Vec3::new((position.x*16 + x) as f32,
+                                        (position.y*64 + y) as f32,
+                                        (position.z*16 + z) as f32) / 60.0;
 
-                    let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]);
+                    let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]) +
+                              noise.get([octave.x as f64, octave.y as f64, octave.z as f64]);
 
                     if val <= 0.0 {
                         let block = if 0 <= y && y <= 20 {

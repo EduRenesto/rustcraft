@@ -31,13 +31,12 @@ fn main() {
     let mut events_loop = glutin::EventsLoop::new();
     let window = glutin::WindowBuilder::new()
         .with_title("Rustcraft")
-        .with_dimensions(glutin::dpi::LogicalSize::new(1280.0, 768.0));
+        .with_dimensions(glutin::dpi::LogicalSize::new(1280.0, 720.0));
     let context = glutin::ContextBuilder::new();
     let gl_window = glutin::GlWindow::new(window, context, &events_loop)
         .expect("Failed to create window!");
 
     unsafe {
-        use glutin::GlContext;
         gl_window.make_current().expect("Failed to make GL context current!");
     }
 
@@ -46,7 +45,6 @@ fn main() {
     let game = Arc::new(game::Game::new());
 
     unsafe {
-        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
         gl::Viewport(0, 0, 1280, 720);
         gl::Enable(gl::DEPTH_TEST);
     }

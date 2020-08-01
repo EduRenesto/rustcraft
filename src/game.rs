@@ -152,13 +152,13 @@ impl Game {
         self.def.uniform_texture("_Occlusion".to_string(), &self.g_buffer.color_attachments[3], 3);
         self.quad.render();
 
-        let roty = cgmath::Matrix4::from_angle_y(cgmath::Rad(self.camera.borrow().hor_angle));
-        let rotx = cgmath::Matrix4::from_angle_x(cgmath::Rad(self.camera.borrow().ver_angle));
+        //let roty = cgmath::Matrix4::from_angle_y(cgmath::Rad(self.camera.borrow().hor_angle));
+        //let rotx = cgmath::Matrix4::from_angle_x(cgmath::Rad(self.camera.borrow().ver_angle));
 
-        self.gizmo_shader.bind();
-        self.gizmo_shader.uniform_mat4x4("_RotX".to_string(), rotx);
-        self.gizmo_shader.uniform_mat4x4("_RotY".to_string(), roty);
-        self.gizmo.render();
+        //self.gizmo_shader.bind();
+        //self.gizmo_shader.uniform_mat4x4("_RotX".to_string(), rotx);
+        //self.gizmo_shader.uniform_mat4x4("_RotY".to_string(), roty);
+        //self.gizmo.render();
 
         //unsafe { gl::Disable(gl::DEPTH_TEST); }
         //self.gizmo_shader.bind();
