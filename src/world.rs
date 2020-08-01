@@ -27,13 +27,13 @@ impl World {
         //noise.set_seed(120934834);
         noise.set_seed(1831823);
 
-        let mut blocks = [[[0; 18]; 64]; 18];
+        let mut blocks = [[[0; 18]; 128]; 18];
 
         for x in 0..17 {
-            for y in 0..63 {
+            for y in 0..127 {
                 for z in 0..17 {
                     let pos = Vec3::new((position.x*16 + x) as f32,
-                                        (position.y*64 + y) as f32,
+                                        (position.y*128 + y) as f32,
                                         (position.z*16 + z) as f32) / 30.0;
 
                     let val = (1..=4).into_iter()

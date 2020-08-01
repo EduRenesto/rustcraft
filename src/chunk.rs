@@ -10,11 +10,11 @@ type Vec3 = cgmath::Vector3<f32>;
 type Vec2 = cgmath::Vector2<f32>;
 type IVec3 = cgmath::Vector3<i32>;
 
-// A chunk is a block of 16x16x64 blocks.
+// A chunk is a block of 16x16x128 blocks.
 // we add 2 to each dimension because of the edges
 pub struct Chunk {
     // the blocks
-    pub blocks: [[[u32; 18]; 64]; 18], 
+    pub blocks: [[[u32; 18]; 128]; 18], 
 
     // the position (in "chunk space")
     pub position: IVec3
@@ -51,7 +51,7 @@ impl Chunk {
                     let pos_z = at(x, y, z + 1);
                     let neg_z = at(x, y, z - 1);
 
-                    let pos_y = if y == 64 {
+                    let pos_y = if y == 128 {
                         0
                     } else {
                         at(x, y + 1, z)
@@ -62,7 +62,7 @@ impl Chunk {
                         at(x, y - 1, z)
                     };
 
-                    let pos_x_pos_y = if y == 64 {
+                    let pos_x_pos_y = if y == 128 {
                         0
                     } else {
                         at(x + 1, y + 1, z)
@@ -75,7 +75,7 @@ impl Chunk {
                     let pos_x_pos_z = at(x + 1, y, z + 1);
                     let pos_x_neg_z = at(x + 1, y, z - 1);
 
-                    let neg_x_pos_y = if y == 64 {
+                    let neg_x_pos_y = if y == 128 {
                         0
                     } else {
                         at(x - 1, y + 1, z)
@@ -88,7 +88,7 @@ impl Chunk {
                     let neg_x_pos_z = at(x - 1, y, z + 1);
                     let neg_x_neg_z = at(x - 1, y, z - 1);
 
-                    let (pos_y_pos_z, pos_y_neg_z) = if y == 64 {
+                    let (pos_y_pos_z, pos_y_neg_z) = if y == 128 {
                         (0, 0)
                     } else {
                         (at(x, y + 1, z + 1), at(x, y + 1, z - 1))
@@ -119,7 +119,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + 1 + (x as i32)) as f32,
-                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.y * 128 + (y as i32)) as f32,
                             (self.position.z * 16 + (z as i32)) as f32
                         );
 
@@ -165,7 +165,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32)) as f32,
-                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.y * 128 + (y as i32)) as f32,
                             (self.position.z * 16 + (z as i32)) as f32
                         );
 
@@ -217,7 +217,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32)) as f32,
-                            (self.position.y * 64 + 1 + (y as i32)) as f32,
+                            (self.position.y * 128 + 1 + (y as i32)) as f32,
                             (self.position.z * 16 + (z as i32)) as f32
                         );
 
@@ -272,7 +272,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32)) as f32,
-                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.y * 128 + (y as i32)) as f32,
                             (self.position.z * 16 + (z as i32)) as f32
                         );
 
@@ -324,7 +324,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32)) as f32,
-                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.y * 128 + (y as i32)) as f32,
                             (self.position.z * 16 + 1 + (z as i32)) as f32
                         );
 
@@ -376,7 +376,7 @@ impl Chunk {
                         // position of the face
                         let pos = Vec3::new(
                             (self.position.x * 16 + (x as i32)) as f32,
-                            (self.position.y * 64 + (y as i32)) as f32,
+                            (self.position.y * 128 + (y as i32)) as f32,
                             (self.position.z * 16 + (z as i32)) as f32
                         );
 
