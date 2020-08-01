@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-
 use crate::chunk::Chunk;
 
 use noise::{NoiseFn, OpenSimplex, Seedable};
@@ -37,12 +35,11 @@ impl World {
                     let pos = Vec3::new((position.x*16 + x) as f32,
                                         (position.y*64 + y) as f32,
                                         (position.z*16 + z) as f32) / 30.0;
-                    let octave = Vec3::new((position.x*16 + x) as f32,
-                                        (position.y*64 + y) as f32,
-                                        (position.z*16 + z) as f32) / 60.0;
 
-                    let val = noise.get([pos.x as f64, pos.y as f64, pos.z as f64]) +
-                              noise.get([octave.x as f64, octave.y as f64, octave.z as f64]);
+                    let val = (1..=4).into_iter()
+                        .map(|i| pos/i as f32)
+                        .map(|v| noise.get([v.x as f64, v.y as f64, v.z as f64]) as f32)
+                        .sum::<f32>();
 
                     if val <= 0.0 {
                         let block = if 0 <= y && y <= 20 {
@@ -55,15 +52,16 @@ impl World {
                             0
                         };
 
-                        blocks[(x) as usize][(y) as usize][(z) as usize] = block;
+                        blocks[x as usize][y as usize][z as usize] = block;
                     }
                 }
             }
         }
 
+
         Chunk {
-            blocks: blocks,
-            position: position
+            blocks,
+            position
         }
     }
 }
