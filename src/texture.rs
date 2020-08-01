@@ -92,4 +92,11 @@ impl Texture {
             gl::BindTexture(gl::TEXTURE_2D, self.handle);
         }
     }
+
+    pub fn gen_mipmaps(&self) {
+        unsafe {
+            self.bind();
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+        }
+    }
 }

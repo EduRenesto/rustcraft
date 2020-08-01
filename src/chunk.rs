@@ -34,7 +34,7 @@ impl Chunk {
         let mut occlusion = Vec::<f32>::new();
 
         for x in 1..=16 {
-            for y in 0..=63 {
+            for y in 0..=127 {
                 for z in 1..=16 {
                     let block = at(x, y, z);
 

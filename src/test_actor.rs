@@ -35,14 +35,15 @@ impl TestActor {
             .unwrap();
 
         let text = Texture::from_file("res/textures/terrain.png".to_string(),
-                                               gl::NEAREST as i32,
+                                               gl::NEAREST_MIPMAP_NEAREST as i32,
                                                gl::NEAREST as i32)
             .unwrap();
+        text.gen_mipmaps();
 
         TestActor { 
             vbos: m.collect(), 
             shader: shader,
-            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.001, 1000.0),
+            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.01, 1000.0),
             view_matrix: Matrix4::look_at(Point3::new(-3.0, 3.0, -3.0), Point3::new(0.0, 0.0, 0.0), Vector3::new(0.0, 1.0, 0.0)),
             text: text,
             time: Cell::new(0.0)

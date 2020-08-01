@@ -25,4 +25,5 @@ void main() {
 
     //out_Color = occlusion * diffuse * color; 
     out_Color = color * ((ambient * occlusion) + diffuse);
+    //out_Color = color * ((ambient) + diffuse);
 }
