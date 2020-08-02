@@ -1,11 +1,9 @@
 use std::boxed::Box;
-use std::cell::RefCell;
 
 use crate::render_target::RenderTarget;
 use crate::vertex_buffer::VertexBuffer;
 use crate::mesh::Mesh;
 use crate::shader::Shader;
-use crate::texture::Texture;
 use crate::fps_camera::FpsCamera;
 
 use crate::block_manager::BlockManager;
@@ -136,12 +134,12 @@ impl Game {
         }
     }
 
-    pub fn render(&self) {
+    pub fn render(&mut self) {
         self.g_buffer.bind(); check_gl!();
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
-        for actor in self.actors.iter() {
+        for actor in self.actors.iter_mut() {
             actor.render(&self.camera);
         }
 
@@ -171,7 +169,7 @@ impl Game {
     }
 
     pub fn update(&mut self) {
-        for actor in self.actors.iter() {
+        for actor in self.actors.iter_mut() {
             actor.update();
         }
     }

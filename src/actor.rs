@@ -1,6 +1,6 @@
 use crate::camera::Camera;
 
 pub trait Actor {
-    fn update(&self);
-    fn render(&self, camera: &dyn Camera);
+    fn update(&mut self);
+    fn render(&mut self, camera: &dyn Camera);
 }

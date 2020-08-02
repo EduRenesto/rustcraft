@@ -21,10 +21,6 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    fn process_block(pos: IVec3) {
-
-    }
-
     pub fn gen_mesh(&self, manager: &BlockManager) -> Mesh {
         let at = |x: usize, y: usize, z: usize| self.blocks[x][y][z];
 

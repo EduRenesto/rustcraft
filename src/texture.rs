@@ -8,8 +8,8 @@ pub struct Texture {
 
 impl Texture {
     // TODO refactor this
-    pub fn from_file(file: String, min_filter: GLint, mag_filter: GLint) -> Result<Texture, String> {
-        let data = image::load(file);
+    pub fn from_file(file: impl AsRef<str>, min_filter: GLint, mag_filter: GLint) -> Result<Texture, String> {
+        let data = image::load(file.as_ref());
 
         match data {
             image::LoadResult::Error(err) => return Err(err),
@@ -83,7 +83,7 @@ impl Texture {
             let mut handle = 0 as GLuint;
             gl::GenTextures(1, &mut handle);
 
-            Texture { handle: handle }
+            Texture { handle }
         }
     }
 
