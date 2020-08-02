@@ -1,7 +1,6 @@
-use std::cell::Ref;
-use crate::fps_camera::FpsCamera;
+use crate::camera::Camera;
 
 pub trait Actor {
     fn update(&self);
-    fn render(&self, camera: Ref<FpsCamera>);
+    fn render(&self, camera: &dyn Camera);
 }

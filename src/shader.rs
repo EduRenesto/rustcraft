@@ -9,7 +9,7 @@ pub struct Shader {
 }
 
 impl Shader {
-    pub fn new(files: Vec<Box<(GLenum, String)>>) -> Result<Shader, String> {
+    pub fn new(files: Vec<Box<(GLenum, impl AsRef<str>)>>) -> Result<Shader, String> {
         unsafe {
             let handle = gl::CreateProgram();
 
@@ -17,10 +17,10 @@ impl Shader {
                 let (shader_type, file_name) = *b;
                 if !vec![gl::VERTEX_SHADER, gl::FRAGMENT_SHADER,
                     gl::COMPUTE_SHADER, gl::GEOMETRY_SHADER].contains(&shader_type) {
-                    return Err(format!("Shader type for {} isn\'t supported!", file_name));
+                    return Err(format!("Shader type for {} isn\'t supported!", file_name.as_ref()));
                 }
 
-                if let Ok(src) = std::fs::read_to_string(file_name.to_owned()) {
+                if let Ok(src) = std::fs::read_to_string(file_name.as_ref()) {
                     let c_src = std::ffi::CString::new((&src).as_bytes()).unwrap();
 
                     let shader_handle = gl::CreateShader(shader_type);
@@ -39,13 +39,13 @@ impl Shader {
                         buf.set_len((len as usize) - 1);
                         gl::GetShaderInfoLog(shader_handle, len, std::ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
 
-                        return Err(format!("Couldnt compile {}: {}", file_name,
+                        return Err(format!("Couldnt compile {}: {}", file_name.as_ref(),
                                             std::str::from_utf8(&buf).unwrap()));
                     }
 
                     gl::AttachShader(handle, shader_handle);
                 } else {
-                    return Err(format!("Couldnt open {}", file_name));
+                    return Err(format!("Couldnt open {}", file_name.as_ref()));
                 }
             }
 
@@ -64,7 +64,7 @@ impl Shader {
                 return Err(format!("Link failed: {}", std::str::from_utf8(&buf).unwrap()));
             }
 
-            Ok(Shader { handle: handle })
+            Ok(Shader { handle })
         }
     }
 
@@ -74,26 +74,26 @@ impl Shader {
         }
     }
 
-    pub fn uniform_mat4x4(&self, name: String, mat: cgmath::Matrix4<f32>) {
+    pub fn uniform_mat4x4(&self, name: impl AsRef<str>, mat: cgmath::Matrix4<f32>) {
         unsafe {
             let location = gl::GetUniformLocation(self.handle,
-                            std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
+                            std::ffi::CString::new(name.as_ref().as_bytes()).unwrap().as_ptr());
             gl::UniformMatrix4fv(location, 1, gl::FALSE as GLboolean, mat.as_ptr());
         }
     }
 
-    pub fn uniform_float32(&self, name: String, f: f32) {
+    pub fn uniform_float32(&self, name: impl AsRef<str>, f: f32) {
         unsafe {
             let location = gl::GetUniformLocation(self.handle,
-                            std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
+                            std::ffi::CString::new(name.as_ref().as_bytes()).unwrap().as_ptr());
             gl::Uniform1f(location, f);
         }
     }
 
-    pub fn uniform_texture(&self, name: String, tex: &Texture, slot: u32) {
+    pub fn uniform_texture(&self, name: impl AsRef<str>, tex: &Texture, slot: u32) {
         unsafe {
             let location = gl::GetUniformLocation(self.handle,
-                            std::ffi::CString::new(name.as_bytes()).unwrap().as_ptr());
+                            std::ffi::CString::new(name.as_ref().as_bytes()).unwrap().as_ptr());
             
             gl::ActiveTexture(gl::TEXTURE0 + slot);
             tex.bind();

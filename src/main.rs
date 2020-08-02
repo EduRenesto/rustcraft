@@ -6,8 +6,6 @@ extern crate noise;
 
 use glutin::GlContext;
 
-use std::sync::Arc;
-
 #[macro_use]
 pub mod gl_error;
 
@@ -22,6 +20,8 @@ pub mod test_actor;
 pub mod block;
 pub mod chunk;
 pub mod world;
+pub mod light;
+pub mod camera;
 pub mod fps_camera;
 
 #[macro_use]
@@ -42,7 +42,7 @@ fn main() {
 
     gl::load_with(|s| gl_window.get_proc_address(s) as *const _);
 
-    let game = Arc::new(game::Game::new());
+    let mut game = game::Game::new();
 
     unsafe {
         gl::Viewport(0, 0, 1280, 720);

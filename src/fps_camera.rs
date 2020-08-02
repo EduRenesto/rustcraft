@@ -1,5 +1,7 @@
 use std::cell::Cell;
 
+use crate::camera::Camera;
+
 pub struct FpsCamera {
     position: Cell<cgmath::Point3<f32>>,
     speed: f32,
@@ -10,7 +12,9 @@ pub struct FpsCamera {
     right: cgmath::Vector3<f32>,
 
     // TODO remove this once input is properly done
-    movement: cgmath::Vector3<f32>
+    movement: cgmath::Vector3<f32>,
+
+    proj_matrix: cgmath::Matrix4<f32>,
 }
 
 impl FpsCamera {
@@ -19,10 +23,11 @@ impl FpsCamera {
             position: Cell::new(pos), 
             hor_angle: 0.0, 
             ver_angle: 0.0, 
-            speed: speed,
+            speed,
             direction: cgmath::Vector3::new(0.0, 0.0, 1.0),
             right: cgmath::Vector3::new(1.0, 0.0, 0.0),
-            movement: cgmath::Vector3::new(0.0, 0.0, 0.0)
+            movement: cgmath::Vector3::new(0.0, 0.0, 0.0),
+            proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.01, 1000.0),
         }
     }
 
@@ -62,12 +67,18 @@ impl FpsCamera {
         let half_pi = std::f32::consts::FRAC_PI_2;
         self.right = cgmath::Vector3::new((self.hor_angle - half_pi).sin(), 0.0, (self.hor_angle - half_pi).cos());
     }
+}
 
-    pub fn get_view_matrix(&self) -> cgmath::Matrix4<f32> {
+impl Camera for FpsCamera {
+    fn get_view_matrix(&self) -> cgmath::Matrix4<f32> {
         let up = self.right.cross(self.direction);
 
         self.position.set(self.position.get() + self.movement);
 
         cgmath::Matrix4::look_at(self.position.get(), self.position.get() + self.direction, up)
+    }
+
+    fn get_projection_matrix(&self) -> cgmath::Matrix4<f32> {
+        self.proj_matrix
     }
 }

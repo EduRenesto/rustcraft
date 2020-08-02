@@ -6,7 +6,7 @@ use cgmath::Matrix4;
 use cgmath::Point3;
 
 use crate::actor::Actor;
-use crate::fps_camera::FpsCamera;
+use crate::camera::Camera;
 use crate::vertex_buffer::VertexBuffer;
 use crate::shader::Shader;
 use crate::texture::Texture;
@@ -19,7 +19,6 @@ pub struct TestActor {
     vbos: Vec<VertexBuffer>,
     shader: Shader,
     proj_matrix: Matrix4<f32>,
-    view_matrix: Matrix4<f32>,
     text: Texture,
     time: Cell<f32>
 }
@@ -44,7 +43,6 @@ impl TestActor {
             vbos: m.collect(), 
             shader: shader,
             proj_matrix: cgmath::perspective(cgmath::Deg(60.0), 16.0/9.0, 0.01, 1000.0),
-            view_matrix: Matrix4::look_at(Point3::new(-3.0, 3.0, -3.0), Point3::new(0.0, 0.0, 0.0), Vector3::new(0.0, 1.0, 0.0)),
             text: text,
             time: Cell::new(0.0)
         }
@@ -52,7 +50,7 @@ impl TestActor {
 }
 
 impl Actor for TestActor {
-    fn render(&self, camera: Ref<FpsCamera>) {
+    fn render(&self, camera: &dyn Camera) {
         self.shader.bind();
         self.text.bind();
         self.shader.uniform_texture("_Text".to_string(), &self.text, 0);
