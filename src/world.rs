@@ -54,7 +54,11 @@ impl World {
                             //0
                         //};
 
-                        let block = 2;
+                        let block = if val > -0.1 {
+                            2
+                        } else {
+                            1
+                        };
 
                         blocks[x as usize][y as usize][z as usize] = block;
                     } else {
